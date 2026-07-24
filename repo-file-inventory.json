@@ -54,14 +54,14 @@
     {
       "path": "STATE.md",
       "role": "project-memory",
-      "bytes": 5748,
-      "sha256": "2c51cc27a4dc8a0a20aa0e7070974fe32c364acced60f6a9e10deecc31f5ae7a"
+      "bytes": 6234,
+      "sha256": "26606f889cdd0c26c4df958f289ddb374e235a6f3ed4ee1543983b73a5eba3ce"
     },
     {
       "path": "docs/CHANGELOG.dev.md",
       "role": "documentation",
-      "bytes": 19324,
-      "sha256": "89e839c5c0fa72322a6233a7fc9d779ff26995474b795d1f56e66e1e12cfcff5"
+      "bytes": 20125,
+      "sha256": "ac8d8e6df17b66b2c3984ba10f476ea8887daa0fc788962b08c19f366fb0f939"
     },
     {
       "path": "docs/SABLON_AGENTS.md",
@@ -133,13 +133,13 @@
       "path": "package-lock.json",
       "role": "repo-root",
       "bytes": 60658,
-      "sha256": "1e45db4d17b9ad209041eeb651b447eb2ea4bcb7b063ec51967ed5eb32eece4d"
+      "sha256": "43fb9288efd9b68e8754f3860fcb4157fd46709fdcff01b33472f6ad71291b5a"
     },
     {
       "path": "package.json",
       "role": "repo-root",
       "bytes": 910,
-      "sha256": "31978a79db89b89afca0f23003e45032b7e297b744719486a365bbdc589bdee8"
+      "sha256": "f0268a0a4a05d1c24bdf722e114c1bbdf03c678ee444e81068365530192bb766"
     },
     {
       "path": "public/.htaccess",
@@ -216,14 +216,14 @@
     {
       "path": "src/ui/AmbientBackdrop.tsx",
       "role": "source",
-      "bytes": 5977,
-      "sha256": "564d7fa20bc70f9fe872cec6dbe0b48c71230907f5493ed52a654325b9ac19b1"
+      "bytes": 6736,
+      "sha256": "df02470f66a8be50e097f6c18a7d4a469d559634a35ea03b8fb7e93cfe5f1940"
     },
     {
       "path": "src/ui/App.tsx",
       "role": "source",
-      "bytes": 25171,
-      "sha256": "7b5d619ab28afe9fa5a15b8e4d982c1a4ea56a8ad80fd278b3c43ad74a562d0f"
+      "bytes": 25899,
+      "sha256": "88bbff373d51dd1e21a12497c546ba6e048cebd887fc90e93d4ec41f67911437"
     },
     {
       "path": "src/ui/CubeScene.tsx",

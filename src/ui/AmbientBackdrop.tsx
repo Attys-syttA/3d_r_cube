@@ -20,6 +20,7 @@ const YOUTUBE_STATE_PLAYING = 1;
 const YOUTUBE_STATE_PAUSED = 2;
 
 interface YouTubePlayer {
+  getPlayerState: () => number;
   pauseVideo: () => void;
   playVideo: () => void;
   setVolume: (volume: number) => void;
@@ -72,8 +73,33 @@ export const AmbientBackdrop = forwardRef<AmbientBackdropHandle, AmbientBackdrop
 ) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const playerRef = useRef<YouTubePlayer | null>(null);
+  const playbackProbeRef = useRef<number | null>(null);
   const shouldPlayRef = useRef(false);
   const imageUrl = `${import.meta.env.BASE_URL}assets/esperindex.png`;
+
+  const clearPlaybackProbe = () => {
+    if (playbackProbeRef.current === null) return;
+    window.clearTimeout(playbackProbeRef.current);
+    playbackProbeRef.current = null;
+  };
+
+  const probePlaybackState = () => {
+    clearPlaybackProbe();
+    playbackProbeRef.current = window.setTimeout(() => {
+      playbackProbeRef.current = null;
+      if (!shouldPlayRef.current || !playerRef.current) return;
+      if (playerRef.current.getPlayerState() === YOUTUBE_STATE_PLAYING) {
+        onMusicPlaybackChange(true);
+      }
+    }, 350);
+  };
+
+  const attemptPlay = () => {
+    if (!playerRef.current) return;
+    playerRef.current.setVolume(PLAYER_VOLUME);
+    playerRef.current.playVideo();
+    probePlaybackState();
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -123,6 +149,10 @@ export const AmbientBackdrop = forwardRef<AmbientBackdropHandle, AmbientBackdrop
   }, []);
 
   useEffect(() => {
+    return clearPlaybackProbe;
+  }, []);
+
+  useEffect(() => {
     const createPlayer = () => {
       if (playerRef.current || !window.YT) return;
       playerRef.current = new window.YT.Player(PLAYER_ELEMENT_ID, {
@@ -139,7 +169,7 @@ export const AmbientBackdrop = forwardRef<AmbientBackdropHandle, AmbientBackdrop
           onReady: (event) => {
             event.target.setVolume(PLAYER_VOLUME);
             if (shouldPlayRef.current) {
-              event.target.playVideo();
+              attemptPlay();
             }
           },
           onStateChange: (event) => {
@@ -181,20 +211,19 @@ export const AmbientBackdrop = forwardRef<AmbientBackdropHandle, AmbientBackdrop
     playMusic: () => {
       shouldPlayRef.current = true;
       if (!playerRef.current) return true;
-      playerRef.current.setVolume(PLAYER_VOLUME);
-      playerRef.current.playVideo();
+      attemptPlay();
       return true;
     },
     retryMusic: () => {
       if (!shouldPlayRef.current || !playerRef.current) return;
-      playerRef.current.setVolume(PLAYER_VOLUME);
-      playerRef.current.playVideo();
+      attemptPlay();
     }
   }));
 
   useEffect(() => {
     shouldPlayRef.current = isMusicRequested;
     if (!isMusicRequested) {
+      clearPlaybackProbe();
       playerRef.current?.pauseVideo();
     }
   }, [isMusicRequested]);

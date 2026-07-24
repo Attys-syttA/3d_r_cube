@@ -239,3 +239,10 @@
 - Modositott teruletek: `App.tsx`, `AmbientBackdrop.tsx`, STATE, verzio, inventory.
 - Eredmeny: a hatterzene vezerlese haromallapotu lett: `off`, `starting`, `playing`. A gomb csak tenyleges YouTube `PLAYING` state utan szamit lejatszonak; `starting` allapotban az ujabb koppintas retry, nem kikapcsolas. A kockahang unlock a konkret kockamozdulat inditasakor is fut, es a nema prime csak sikeres `AudioContext.resume()` utan indul.
 - Follow-up: friss build feltoltese utan mobil Safari/Chrome/Opera smoke teszt, kulon figyelve arra, hogy `starting` allapotbol hany koppintas utan lesz tenyleges hang.
+
+## 2026-07-25 - Mobil zene retry es beragadasvedelem
+
+- Cel: kezelni, hogy mobil Chrome-ban a hatterzene gomb `starting` allapotban maradt, mikozben egyes bongeszokben a lejatszas csak 6-20 masodperc kesleltetessel indult.
+- Modositott teruletek: `App.tsx`, `AmbientBackdrop.tsx`, STATE, verzio, inventory.
+- Eredmeny: a YouTube `PLAYING` event mellett 350 ms-os `getPlayerState()` poll is ellenorzi, hogy a player tenylegesen jatszik-e. `starting` allapotban idozitett retry sorozat fut 1, 2.5, 5, 9, 14, 20 es 26 masodpercnel. Ha 32 masodpercig nincs `PLAYING`, a player pause-t kap es a gomb visszaall `off` allapotba.
+- Follow-up: friss build feltoltese utan tesztelni, hogy Chrome alatt legfeljebb visszaesik-e off-ra, de nem ragad be; Safari/Opera alatt pedig gyorsul-e a kesleltetett indulas.

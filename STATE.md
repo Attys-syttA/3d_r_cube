@@ -20,6 +20,7 @@
 - A hatterzene Apple/WebKit tiltasa kikerult; a YouTube lejatszas az E-SPER root oldal mintajahoz kozelit: rejtett `YT.Player`, `setVolume(25)`, majd kozvetlen `playVideo()` / `pauseVideo()` a HUD gombbol.
 - A kocka effekt hanghoz tartos `AudioContext` tartozik; az elso pointer vagy billentyu interakcio kozvetlenul feloldja, nema prime hanggal is megmozgatja, hogy Chrome iOS alatt ne a kesleltetett forgatasanimacio probalja eloszor letrehozni.
 - A hatterzene gomb haromallapotu logikat hasznal: kikapcsolt, inditas alatt, tenylegesen jatszik. Inditas alatt az ujabb koppintas nem kapcsolja ki, hanem ujra probalja a YouTube `playVideo()` hivast, amig a player `PLAYING` allapotot nem jelez.
+- A hatterzene inditas mobilon idozitett ujraprobalkozasokat kapott; ha a YouTube state event elmarad, `getPlayerState()` poll is ellenorzi a tenyleges `PLAYING` allapotot. Ha kb. 32 masodpercig nincs indulas, a gomb visszaesik kikapcsolt allapotba, hogy Chrome-ban ne ragadjon be.
 
 ## Legutobbi fontos dontesek
 
@@ -49,6 +50,7 @@
 - Zene javitas: a korabbi Apple/WebKit gombtiltas kikerult, az `unMute`, `playsinline`, `enablejsapi` es `origin` extra player opciok eltavolitva, a player kontener ujra 0x0 rejtett root-mintara valtott.
 - Chrome iOS hang javitas: a kockahang `AudioContext` mar user gesture alatt oldodik fel, nem a 260 ms-os move timeout utan; a feloldas nema oscillator prime-ot is indit.
 - Chrome iOS zene javitas: a gomb allapota mar nem keveri ossze a kert inditast es a tenyleges lejatszast; `PLAYING` YouTube state nelkul a gomb inditas alatt marad, es az ujabb koppintas ujraprobal, nem kikapcsol.
+- Mobil zene beragadas javitas: a `PLAYING` event mellett kesleltetett `getPlayerState()` poll is fut, es az inditasi retry sorozat 32 masodperc utan biztonsagosan visszaallitja a gombot `off` allapotba.
 - Chrome iOS kockahang stabilizalas: a nema prime oscillator csak sikeres `AudioContext.resume()` utan indul, es a konkret kockamozdulat inditasakor is tortenik audio unlock probalkozas.
 - Maradek kockazat: Chrome DevTools MCP profilzar miatt friss MCP-s screenshot nem keszult. A lokalis WebGL warning javitasa utan erdemes a Vite dev tabot teljesen frissiteni.
 

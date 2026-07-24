@@ -30,6 +30,8 @@ const TOUCH_POINTER_QUERY = "(hover: none) and (pointer: coarse)";
 const TOOLTIP_MAX_WIDTH = 280;
 const TOOLTIP_EDGE_GAP = 12;
 const TOOLTIP_POINTER_GAP = 18;
+const MUSIC_RETRY_DELAYS_MS = [1000, 2500, 5000, 9000, 14000, 20000, 26000];
+const MUSIC_START_TIMEOUT_MS = 32000;
 
 const MOVE_HELP: Record<MoveSymbol, { label: string; details: string }> = {
   U: { label: "U - felso oldal", details: "felso oldal" },
@@ -372,6 +374,27 @@ export function App() {
       return isPlaying ? "playing" : "starting";
     });
   }, []);
+
+  useEffect(() => {
+    if (musicState !== "starting") return undefined;
+
+    const retryTimers = MUSIC_RETRY_DELAYS_MS.map((delay) =>
+      window.setTimeout(() => {
+        ambientBackdropRef.current?.retryMusic();
+      }, delay)
+    );
+    const timeout = window.setTimeout(() => {
+      ambientBackdropRef.current?.pauseMusic();
+      setMusicState((current) => (current === "starting" ? "off" : current));
+    }, MUSIC_START_TIMEOUT_MS);
+
+    return () => {
+      for (const timer of retryTimers) {
+        window.clearTimeout(timer);
+      }
+      window.clearTimeout(timeout);
+    };
+  }, [musicState]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
