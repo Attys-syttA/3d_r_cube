@@ -22,9 +22,14 @@ import { AmbientBackdrop, type AmbientBackdropHandle } from "./AmbientBackdrop";
 
 type TurnDirection = "normal" | "inverse";
 type VisualTheme = "day" | "night";
+type TooltipPlacement = "above" | "below";
+type MusicState = "off" | "starting" | "playing";
 
 const THEME_STORAGE_KEY = "r-cube-theme";
-const APPLE_WEBKIT_PATTERN = /iPad|iPhone|iPod|Macintosh/;
+const TOUCH_POINTER_QUERY = "(hover: none) and (pointer: coarse)";
+const TOOLTIP_MAX_WIDTH = 280;
+const TOOLTIP_EDGE_GAP = 12;
+const TOOLTIP_POINTER_GAP = 18;
 
 const MOVE_HELP: Record<MoveSymbol, { label: string; details: string }> = {
   U: { label: "U - felso oldal", details: "felso oldal" },
@@ -40,12 +45,18 @@ const MOVE_HELP: Record<MoveSymbol, { label: string; details: string }> = {
 
 const MOVE_HELP_TEXT = MOVE_SYMBOLS.map((symbol) => `${MOVE_HELP[symbol].label}: ${MOVE_HELP[symbol].details}.`).join(" ");
 
-const HELP_STEPS = [
+const DESKTOP_HELP_STEPS = [
   "Huzd korbe az ures teret a kamera forgatasahoz, vagy hasznald az egergorgot kozeliteshez.",
   "Kattints egy szines matricara, majd huzd oldalra vagy fel-le egy kulso vagy kozepso reteg elforgatasahoz.",
   "A kezelopanelen elobb valassz iranyt: ↻ = alapirany, ↺ = ellenkezo irany. A 2x kulon kapcsolo: ha aktiv, a kovetkezo oldalgomb 180 fokot fordul.",
   `Jelolesek: ${MOVE_HELP_TEXT}`,
   "Billentyuk: U D L R F B M E S. Shift + betu az ellenkezo irany, a 2 billentyu dupla forgatast kapcsol.",
+  "A Keveres gomb szabalyos lepesekbol indit uj jatekot. A keveres nem szamit bele a mozdulatszamba."
+];
+
+const TOUCH_HELP_STEPS = [
+  "Huzd korbe az ures teret a kamera forgatasahoz.",
+  "Erints meg egy szines matricat, majd huzd oldalra vagy fel-le egy kulso vagy kozepso reteg elforgatasahoz.",
   "A Keveres gomb szabalyos lepesekbol indit uj jatekot. A keveres nem szamit bele a mozdulatszamba."
 ];
 
@@ -63,11 +74,23 @@ function getInitialTheme(): VisualTheme {
   }
 }
 
-function isAppleWebKitDevice(): boolean {
+function getInitialTouchControlsHidden(): boolean {
   if (typeof window === "undefined") return false;
-  const navigatorInfo = window.navigator;
-  const hasTouch = navigatorInfo.maxTouchPoints > 1;
-  return APPLE_WEBKIT_PATTERN.test(navigatorInfo.userAgent) && hasTouch;
+  return window.matchMedia(TOUCH_POINTER_QUERY).matches;
+}
+
+function useTouchControlsHidden(): boolean {
+  const [isHidden, setHidden] = useState(() => getInitialTouchControlsHidden());
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(TOUCH_POINTER_QUERY);
+    const onChange = () => setHidden(mediaQuery.matches);
+    onChange();
+    mediaQuery.addEventListener("change", onChange);
+    return () => mediaQuery.removeEventListener("change", onChange);
+  }, []);
+
+  return isHidden;
 }
 
 function useGameTimer(isRunning: boolean, resetKey: number): number {
@@ -92,29 +115,71 @@ function formatTime(totalSeconds: number): string {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
+function playEffectTone(context: AudioContext, gainValue: number, durationSeconds: number) {
+  if (context.state === "closed") return;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  oscillator.frequency.value = 220;
+  gain.gain.value = gainValue;
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start();
+  oscillator.stop(context.currentTime + durationSeconds);
+}
+
 export function App() {
   const [cube, setCube] = useState<CubeState>(() => createSolvedCube());
   const ambientBackdropRef = useRef<AmbientBackdropHandle | null>(null);
+  const effectAudioContextRef = useRef<AudioContext | null>(null);
   const cubeRef = useRef(cube);
   const [history, setHistory] = useState<Move[]>([]);
   const [scrambleStart, setScrambleStart] = useState<CubeState>(() => createSolvedCube());
   const [gameStarted, setGameStarted] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [isMuted, setMuted] = useState(false);
-  const [isMusicPlaying, setMusicPlaying] = useState(false);
+  const [musicState, setMusicState] = useState<MusicState>("off");
   const [timerResetKey, setTimerResetKey] = useState(0);
   const [pendingMove, setPendingMove] = useState<Move | null>(null);
   const [lastMove, setLastMove] = useState<string>("Alaphelyzet");
   const [turnDirection, setTurnDirection] = useState<TurnDirection>("normal");
   const [visualTheme, setVisualTheme] = useState<VisualTheme>(() => getInitialTheme());
-  const [moveTooltip, setMoveTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
+  const [floatingTooltip, setFloatingTooltip] = useState<{
+    text: string;
+    x: number;
+    y: number;
+    placement: TooltipPlacement;
+  } | null>(null);
   const [isDoubleTurn, setDoubleTurn] = useState(false);
   const [helpIndex, setHelpIndex] = useState(0);
   const [isHelpOpen, setHelpOpen] = useState(true);
 
   const seconds = useGameTimer(gameStarted && !completed, timerResetKey);
   const solved = useMemo(() => isSolved(cube), [cube]);
-  const usesAppleMusicPanel = useMemo(() => isAppleWebKitDevice(), []);
+  const hideMoveControls = useTouchControlsHidden();
+  const helpSteps = hideMoveControls ? TOUCH_HELP_STEPS : DESKTOP_HELP_STEPS;
+  const isMusicRequested = musicState !== "off";
+  const isMusicPlaying = musicState === "playing";
+  const musicTooltip =
+    musicState === "off"
+      ? "Hatterzene bekapcsolasa"
+      : musicState === "starting"
+        ? "Hatterzene inditasa ujraprobalasa"
+        : "Hatterzene kikapcsolasa";
+
+  useEffect(() => {
+    return () => {
+      const context = effectAudioContextRef.current;
+      effectAudioContextRef.current = null;
+      if (context && context.state !== "closed") {
+        void context.close();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    setFloatingTooltip(null);
+    setHelpIndex((index) => Math.min(index, helpSteps.length - 1));
+  }, [helpSteps.length]);
 
   useEffect(() => {
     cubeRef.current = cube;
@@ -132,33 +197,92 @@ export function App() {
     }
   }, [visualTheme]);
 
-  const showMoveTooltip = useCallback((symbol: MoveSymbol, clientX: number, clientY: number) => {
-    setMoveTooltip({ text: moveTitle(symbol), x: clientX, y: clientY });
+  const showTooltip = useCallback((text: string, clientX: number, clientY: number) => {
+    const minX = TOOLTIP_EDGE_GAP + TOOLTIP_MAX_WIDTH / 2;
+    const maxX = Math.max(minX, window.innerWidth - TOOLTIP_EDGE_GAP - TOOLTIP_MAX_WIDTH / 2);
+    const x = Math.min(Math.max(clientX, minX), maxX);
+    const placement: TooltipPlacement = clientY < 84 ? "below" : "above";
+    const y = placement === "above" ? clientY - TOOLTIP_POINTER_GAP : clientY + TOOLTIP_POINTER_GAP;
+    setFloatingTooltip({ text, x, y, placement });
   }, []);
 
-  const showFocusedMoveTooltip = useCallback((symbol: MoveSymbol, element: HTMLButtonElement) => {
+  const showFocusedTooltip = useCallback((text: string, element: HTMLButtonElement) => {
     const rect = element.getBoundingClientRect();
-    setMoveTooltip({ text: moveTitle(symbol), x: rect.left + rect.width / 2, y: rect.top });
+    const clientX = rect.left + rect.width / 2;
+    const clientY = rect.top + rect.height / 2;
+    const minX = TOOLTIP_EDGE_GAP + TOOLTIP_MAX_WIDTH / 2;
+    const maxX = Math.max(minX, window.innerWidth - TOOLTIP_EDGE_GAP - TOOLTIP_MAX_WIDTH / 2);
+    const x = Math.min(Math.max(clientX, minX), maxX);
+    const placement: TooltipPlacement = rect.top < 84 ? "below" : "above";
+    const y = placement === "above" ? rect.top - TOOLTIP_POINTER_GAP : rect.bottom + TOOLTIP_POINTER_GAP;
+    setFloatingTooltip({ text, x, y, placement });
   }, []);
+
+  const getEffectAudioContext = useCallback((): AudioContext | null => {
+    if (typeof window === "undefined") return null;
+    const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextCtor) return null;
+    if (!effectAudioContextRef.current) {
+      effectAudioContextRef.current = new AudioContextCtor();
+    }
+    return effectAudioContextRef.current;
+  }, []);
+
+  const unlockEffectAudio = useCallback(() => {
+    const context = getEffectAudioContext();
+    if (!context || context.state === "closed") return;
+
+    const retryRequestedMusic = () => {
+      if (isMusicRequested) {
+        ambientBackdropRef.current?.retryMusic();
+      }
+    };
+
+    if (context.state === "running") {
+      playEffectTone(context, 0.00001, 0.03);
+      retryRequestedMusic();
+      return;
+    }
+
+    if (context.state === "suspended") {
+      void context
+        .resume()
+        .then(() => {
+          if (context.state === "running") {
+            playEffectTone(context, 0.00001, 0.03);
+            retryRequestedMusic();
+          }
+        })
+        .catch(() => {
+          // Browser audio policies may reject unlock outside a real user gesture.
+        });
+    }
+  }, [getEffectAudioContext, isMusicRequested]);
 
   const playTick = useCallback(() => {
     if (isMuted || typeof window === "undefined") return;
-    const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextCtor) return;
-    const context = new AudioContextCtor();
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    oscillator.frequency.value = 220;
-    gain.gain.value = 0.025;
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start();
-    oscillator.stop(context.currentTime + 0.05);
-  }, [isMuted]);
+    const context = getEffectAudioContext();
+    if (!context || context.state === "closed") return;
+    if (context.state === "suspended") {
+      void context
+        .resume()
+        .then(() => {
+          if (context.state === "running") {
+            playEffectTone(context, 0.025, 0.05);
+          }
+        })
+        .catch(() => {
+          // If the browser requires a fresh gesture, the next pointer/key event will unlock again.
+        });
+      return;
+    }
+    playEffectTone(context, 0.025, 0.05);
+  }, [getEffectAudioContext, isMuted]);
 
   const performMove = useCallback(
     (move: Move, options: { record?: boolean; startGame?: boolean } = {}) => {
       if (pendingMove) return;
+      unlockEffectAudio();
       setPendingMove(move);
       setLastMove(formatMove(move));
       window.setTimeout(() => {
@@ -177,7 +301,7 @@ export function App() {
         playTick();
       }, 260);
     },
-    [pendingMove, playTick]
+    [pendingMove, playTick, unlockEffectAudio]
   );
 
   const resetSolved = useCallback(() => {
@@ -229,21 +353,25 @@ export function App() {
   );
 
   const toggleMusic = useCallback(() => {
-    if (usesAppleMusicPanel) {
-      ambientBackdropRef.current?.pauseMusic();
-      setMusicPlaying(false);
-      return;
-    }
+    unlockEffectAudio();
 
     if (isMusicPlaying) {
       ambientBackdropRef.current?.pauseMusic();
-      setMusicPlaying(false);
+      setMusicState("off");
       return;
     }
 
-    const started = ambientBackdropRef.current?.playMusic() ?? false;
-    setMusicPlaying(started);
-  }, [isMusicPlaying, usesAppleMusicPanel]);
+    setMusicState("starting");
+    ambientBackdropRef.current?.playMusic();
+    ambientBackdropRef.current?.retryMusic();
+  }, [isMusicPlaying, unlockEffectAudio]);
+
+  const handleMusicPlaybackChange = useCallback((isPlaying: boolean) => {
+    setMusicState((current) => {
+      if (current === "off") return current;
+      return isPlaying ? "playing" : "starting";
+    });
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -251,23 +379,35 @@ export function App() {
       if (target?.closest("input, textarea, select, [contenteditable='true']")) return;
       const key = event.key.toUpperCase();
       if (key === "2") {
+        unlockEffectAudio();
         setDoubleTurn((value) => !value);
         return;
       }
       if (!MOVE_SYMBOLS.includes(key as MoveSymbol)) return;
       event.preventDefault();
+      unlockEffectAudio();
       const suffix: MoveSuffix = isDoubleTurn ? "2" : event.shiftKey ? "'" : turnDirection === "inverse" ? "'" : "";
       performMove({ face: key as MoveSymbol, suffix }, { startGame: true });
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isDoubleTurn, performMove, turnDirection]);
+  }, [isDoubleTurn, performMove, turnDirection, unlockEffectAudio]);
 
   return (
-    <main className="app-shell" data-theme={visualTheme}>
+    <main
+      className="app-shell"
+      data-theme={visualTheme}
+      onMouseDownCapture={unlockEffectAudio}
+      onPointerDownCapture={unlockEffectAudio}
+      onTouchStartCapture={unlockEffectAudio}
+    >
       <section className="play-space" aria-label="3D R-CUBE jatekter">
-        <AmbientBackdrop ref={ambientBackdropRef} isMusicPlaying={isMusicPlaying} />
+        <AmbientBackdrop
+          ref={ambientBackdropRef}
+          isMusicRequested={isMusicRequested}
+          onMusicPlaybackChange={handleMusicPlaybackChange}
+        />
         <CubeScene cube={cube} pendingMove={pendingMove} theme={visualTheme} onMove={performMove} />
       </section>
 
@@ -282,33 +422,54 @@ export function App() {
               className="icon-button"
               type="button"
               aria-label={isMuted ? "Effekt hang bekapcsolasa" : "Effekt hang kikapcsolasa"}
-              title={isMuted ? "Effekt hang bekapcsolasa" : "Effekt hang kikapcsolasa"}
+              onFocus={(event) =>
+                showFocusedTooltip(
+                  isMuted ? "Kocka hang bekapcsolasa" : "Kocka hang kikapcsolasa",
+                  event.currentTarget
+                )
+              }
+              onBlur={() => setFloatingTooltip(null)}
+              onPointerEnter={(event) =>
+                showTooltip(isMuted ? "Kocka hang bekapcsolasa" : "Kocka hang kikapcsolasa", event.clientX, event.clientY)
+              }
+              onPointerMove={(event) =>
+                showTooltip(isMuted ? "Kocka hang bekapcsolasa" : "Kocka hang kikapcsolasa", event.clientX, event.clientY)
+              }
+              onPointerLeave={() => setFloatingTooltip(null)}
               onClick={() => setMuted((value) => !value)}
             >
               {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
             </button>
             <button
-              className={isMusicPlaying ? "icon-button selected" : "icon-button"}
+              className={isMusicRequested ? "icon-button selected" : "icon-button"}
               type="button"
-              aria-label={
-                usesAppleMusicPanel
-                  ? "Hatterzene Apple eszkozon jelenleg nem tamogatott"
-                  : isMusicPlaying
-                    ? "Hatterzene kikapcsolasa"
-                    : "Hatterzene bekapcsolasa"
+              aria-label={musicTooltip}
+              aria-pressed={isMusicRequested}
+              onFocus={(event) =>
+                showFocusedTooltip(
+                  musicTooltip,
+                  event.currentTarget
+                )
               }
-              aria-pressed={isMusicPlaying}
-              disabled={usesAppleMusicPanel}
-              title={
-                usesAppleMusicPanel
-                  ? "Apple eszkozon a YouTube hatterzene nem megbizhato. Saját audiofajllal lesz javithato."
-                  : isMusicPlaying
-                    ? "Hatterzene kikapcsolasa"
-                    : "Hatterzene bekapcsolasa."
+              onBlur={() => setFloatingTooltip(null)}
+              onPointerEnter={(event) =>
+                showTooltip(
+                  musicTooltip,
+                  event.clientX,
+                  event.clientY
+                )
               }
+              onPointerMove={(event) =>
+                showTooltip(
+                  musicTooltip,
+                  event.clientX,
+                  event.clientY
+                )
+              }
+              onPointerLeave={() => setFloatingTooltip(null)}
               onClick={toggleMusic}
             >
-              {isMusicPlaying ? <Music2 size={20} /> : <Music size={20} />}
+              {isMusicRequested ? <Music2 size={20} /> : <Music size={20} />}
             </button>
           </div>
         </header>
@@ -378,75 +539,98 @@ export function App() {
           </button>
         </div>
 
-        <section className="move-pad" aria-label="Kocka mozdulatok">
-          <div className="suffix-toggle" role="group" aria-label="Forgatas mod">
-            <button
-              className={turnDirection === "normal" ? "selected" : ""}
-              type="button"
-              aria-label="Alapiranyu 90 fokos forgatas"
-              title="Alapiranyu 90 fokos forgatas"
-              onClick={() => setTurnDirection("normal")}
-            >
-              ↻
-            </button>
-            <button
-              className={turnDirection === "inverse" ? "selected" : ""}
-              type="button"
-              aria-label="Ellenkezo iranyu 90 fokos forgatas"
-              title="Ellenkezo iranyu 90 fokos forgatas"
-              onClick={() => setTurnDirection("inverse")}
-            >
-              ↺
-            </button>
-            <button
-              className={isDoubleTurn ? "selected secondary-selected" : ""}
-              type="button"
-              aria-pressed={isDoubleTurn}
-              aria-label="Dupla, 180 fokos forgatas kapcsolasa"
-              title="Dupla, 180 fokos forgatas kapcsolasa"
-              onClick={() => setDoubleTurn((value) => !value)}
-            >
-              2x
-            </button>
-          </div>
-          <div className="move-grid">
-            {MOVE_FACES.map((face) => (
+        {!hideMoveControls ? (
+          <section className="move-pad" aria-label="Kocka mozdulatok">
+            <div className="suffix-toggle" role="group" aria-label="Forgatas mod">
               <button
-                key={face}
+                className={turnDirection === "normal" ? "selected" : ""}
                 type="button"
-                aria-label={moveTitle(face)}
-                onFocus={(event) => showFocusedMoveTooltip(face, event.currentTarget)}
-                onBlur={() => setMoveTooltip(null)}
-                onPointerEnter={(event) => showMoveTooltip(face, event.clientX, event.clientY)}
-                onPointerMove={(event) => showMoveTooltip(face, event.clientX, event.clientY)}
-                onPointerLeave={() => setMoveTooltip(null)}
-                onClick={() => runNotation(face)}
+                aria-label="Alapiranyu 90 fokos forgatas"
+                onFocus={(event) => showFocusedTooltip("Alapiranyu 90 fokos forgatas", event.currentTarget)}
+                onBlur={() => setFloatingTooltip(null)}
+                onPointerEnter={(event) => showTooltip("Alapiranyu 90 fokos forgatas", event.clientX, event.clientY)}
+                onPointerMove={(event) => showTooltip("Alapiranyu 90 fokos forgatas", event.clientX, event.clientY)}
+                onPointerLeave={() => setFloatingTooltip(null)}
+                onClick={() => setTurnDirection("normal")}
               >
-                {face}
+                ↻
               </button>
-            ))}
-            {MOVE_SLICES.map((slice) => (
               <button
-                key={slice}
-                className="slice-move"
+                className={turnDirection === "inverse" ? "selected" : ""}
                 type="button"
-                aria-label={moveTitle(slice)}
-                onFocus={(event) => showFocusedMoveTooltip(slice, event.currentTarget)}
-                onBlur={() => setMoveTooltip(null)}
-                onPointerEnter={(event) => showMoveTooltip(slice, event.clientX, event.clientY)}
-                onPointerMove={(event) => showMoveTooltip(slice, event.clientX, event.clientY)}
-                onPointerLeave={() => setMoveTooltip(null)}
-                onClick={() => runNotation(slice)}
+                aria-label="Ellenkezo iranyu 90 fokos forgatas"
+                onFocus={(event) => showFocusedTooltip("Ellenkezo iranyu 90 fokos forgatas", event.currentTarget)}
+                onBlur={() => setFloatingTooltip(null)}
+                onPointerEnter={(event) => showTooltip("Ellenkezo iranyu 90 fokos forgatas", event.clientX, event.clientY)}
+                onPointerMove={(event) => showTooltip("Ellenkezo iranyu 90 fokos forgatas", event.clientX, event.clientY)}
+                onPointerLeave={() => setFloatingTooltip(null)}
+                onClick={() => setTurnDirection("inverse")}
               >
-                {slice}
+                ↺
               </button>
-            ))}
-          </div>
-        </section>
+              <button
+                className={isDoubleTurn ? "selected secondary-selected" : ""}
+                type="button"
+                aria-pressed={isDoubleTurn}
+                aria-label="Dupla, 180 fokos forgatas kapcsolasa"
+                onFocus={(event) => showFocusedTooltip("Dupla, 180 fokos forgatas kapcsolasa", event.currentTarget)}
+                onBlur={() => setFloatingTooltip(null)}
+                onPointerEnter={(event) =>
+                  showTooltip("Dupla, 180 fokos forgatas kapcsolasa", event.clientX, event.clientY)
+                }
+                onPointerMove={(event) =>
+                  showTooltip("Dupla, 180 fokos forgatas kapcsolasa", event.clientX, event.clientY)
+                }
+                onPointerLeave={() => setFloatingTooltip(null)}
+                onClick={() => setDoubleTurn((value) => !value)}
+              >
+                2x
+              </button>
+            </div>
+            <div className="move-grid">
+              {MOVE_FACES.map((face) => (
+                <button
+                  key={face}
+                  type="button"
+                  aria-label={moveTitle(face)}
+                  onFocus={(event) => showFocusedTooltip(moveTitle(face), event.currentTarget)}
+                  onBlur={() => setFloatingTooltip(null)}
+                  onPointerEnter={(event) => showTooltip(moveTitle(face), event.clientX, event.clientY)}
+                  onPointerMove={(event) => showTooltip(moveTitle(face), event.clientX, event.clientY)}
+                  onPointerLeave={() => setFloatingTooltip(null)}
+                  onClick={() => runNotation(face)}
+                >
+                  {face}
+                </button>
+              ))}
+              {MOVE_SLICES.map((slice) => (
+                <button
+                  key={slice}
+                  className="slice-move"
+                  type="button"
+                  aria-label={moveTitle(slice)}
+                  onFocus={(event) => showFocusedTooltip(moveTitle(slice), event.currentTarget)}
+                  onBlur={() => setFloatingTooltip(null)}
+                  onPointerEnter={(event) => showTooltip(moveTitle(slice), event.clientX, event.clientY)}
+                  onPointerMove={(event) => showTooltip(moveTitle(slice), event.clientX, event.clientY)}
+                  onPointerLeave={() => setFloatingTooltip(null)}
+                  onClick={() => runNotation(slice)}
+                >
+                  {slice}
+                </button>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
-        {moveTooltip ? (
-          <div className="floating-tooltip" role="tooltip" style={{ left: moveTooltip.x, top: moveTooltip.y }}>
-            {moveTooltip.text}
+        {floatingTooltip ? (
+          <div
+            className="floating-tooltip"
+            data-placement={floatingTooltip.placement}
+            role="tooltip"
+            style={{ left: floatingTooltip.x, top: floatingTooltip.y }}
+          >
+            {floatingTooltip.text}
           </div>
         ) : null}
 
@@ -457,14 +641,14 @@ export function App() {
           </div>
           {isHelpOpen ? (
             <>
-              <p>{HELP_STEPS[helpIndex]}</p>
+              <p>{helpSteps[helpIndex]}</p>
               <div className="help-actions">
                 <button type="button" onClick={() => setHelpIndex((index) => Math.max(0, index - 1))}>
                   Elozo
                 </button>
                 <button
                   type="button"
-                  onClick={() => setHelpIndex((index) => Math.min(HELP_STEPS.length - 1, index + 1))}
+                  onClick={() => setHelpIndex((index) => Math.min(helpSteps.length - 1, index + 1))}
                 >
                   Kovetkezo
                 </button>

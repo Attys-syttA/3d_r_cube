@@ -69,7 +69,7 @@ Feltoltes utan ellenorizendo URL-ek:
 - Billentyuk: `U D L R F B M E S`, `Shift + betu` inverse, `2` majd betu dupla forgatas.
 - Eger: lathato szines matricarol vagy annak kozvetlen kereterol indulo huzas kulso vagy kozepso reteget forgat; huzas kozben 3D nyil mutatja a varhato iranyt. Ures ter huzasa a kamerat mozgatja.
 - Megjelenes: a kezelopanel `Nappal` / `Ejszaka` kapcsoloja a jatek es a HUD szinmodjat valtja. A valasztas `localStorage`-ban marad meg, nem sutiben.
-- Hatterzene: a kezelopanel zene gombja kapcsolja az E-SPER root oldalbol atvett YouTube hatterzenet. Kikapcsolt allapotban a YouTube iframe nem toltodik be.
+- Hatterzene: a kezelopanel zene gombja kapcsolja az E-SPER root oldalbol atvett YouTube hatterzenet. A lejatszas az E-SPER root oldal mukodo mintajahoz igazodik: YouTube IFrame API, rejtett player, `playVideo()` / `pauseVideo()` kapcsolas.
 - Tooltip: a move gombok sajat tooltipet hasznalnak, amely az egermutato felett jelenik meg.
 
 ## E-SPER hatter
@@ -78,7 +78,7 @@ A `https://e-sper.hu/` root oldal latvanya kulon React hatterkomponensben fut a 
 
 - `public/assets/esperindex.png`
 
-A hatter `pointer-events: none`, ezert nem zavarja a kocka egeres forgatasat. A YouTube zene Androidon es desktopon a root oldalhoz hasonloan iframe API-val indul a HUD gombrol. Apple telefonon/tableten Chrome alatt is WebKit mediapolicy ervenyesul; ott a YouTube hatterzene gomb le van tiltva, mert a rejtett player es a beagyazott player sem adott jo appon beluli elmenyt. Kulso appra vagy uj lapra nem navigal. A teljesen egységes mobil zenehez kesobb sajat hostolt audiofajl kell.
+A hatter `pointer-events: none`, ezert nem zavarja a kocka egeres forgatasat. A YouTube zene a root oldal forrasa alapjan rejtett `YT.Player` peldannyal indul a HUD gombrol. Nincs Apple-specifikus gombtiltas, kulso appra vagy uj lapra nem navigal. Apple eszkozokon a tenyleges hallhatosagot eles iPad/iPhone smoke teszttel kell ellenorizni.
 
 ## Technologia
 

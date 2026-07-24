@@ -190,3 +190,52 @@
 - Modositott teruletek: `.github/workflows/check.yml`, `scripts/check-inventory.mjs`, verzio, inventory.
 - Eredmeny: a workflow `actions/checkout@v7` es `actions/setup-node@v7` verziokra valt, npm cache-t hasznal, es a `npm.cmd run check` elott `npm.cmd ci` telepitest futtat. Az inventory script mar kizárja a lokalis/CI runtime `test-results/` mappat.
 - Follow-up: push utan GitHub Actions `check` futas ellenorzese.
+
+## 2026-07-24 - Telefonos vezerlopanel egyszerusites
+
+- Cel: erintokepernyon ne latszodjon a betus mozdulat-pad, mert ott a kocka kozvetlen huzasa a termeszetes vezerles.
+- Modositott teruletek: `App.tsx`, `main.css`, STATE, verzio, inventory.
+- Eredmeny: touch/coarse pointer eszkozokon az irany/2x es `U D L R F B M E S` gombok nem renderelodnek, a sugo rovidebb erintos lepessorra valt, es mobilon a jatekter nagyobb kezdo magassagot kap.
+- Follow-up: telefonos renderelt smoke teszt.
+
+## 2026-07-24 - Egyseges tooltip rendszer
+
+- Cel: a kocka hang, hatterzene, forgatasi irany es 2x gombok se hasznaljanak gyari browser tooltip buborekot.
+- Modositott teruletek: `App.tsx`, STATE, verzio, inventory.
+- Eredmeny: az ikon es modvalaszto gombok is a sajat, egermutato fele pozicionalt lebego tooltipet hasznaljak; az `App.tsx` nem tartalmaz `title` attributumot.
+- Follow-up: desktop hover smoke teszt.
+
+## 2026-07-24 - Tooltip viewport igazitas
+
+- Cel: a felso HUD gombok tooltipje ne csusszon be a bongeszo kerete ala.
+- Modositott teruletek: `App.tsx`, `main.css`, STATE, verzio, inventory.
+- Eredmeny: a tooltip alapbol az egermutato felett jelenik meg, de felso helyhiany eseten automatikusan ala fordul, es vizszintesen viewporton belul marad.
+- Follow-up: desktop hover smoke teszt a felso hang/zene gombokon.
+
+## 2026-07-24 - E-SPER root minta szerinti YouTube zeneproba
+
+- Cel: a kocka zeneinditasat a mukodo `https://e-sper.hu/` root HTML forrasaban talalt YouTube-mintahoz kozeliteni.
+- Modositott teruletek: `AmbientBackdrop.tsx`, `App.tsx`, `main.css`, README, STATE, verzio, inventory.
+- Eredmeny: kikerult az Apple/WebKit user-agent alapu zene gomb tiltasa; a HUD zene gomb minden platformon probalhato. A player indulasi utvonalbol kikerult az `unMute`, `playsinline`, `enablejsapi`, `origin` es a 200x200 transzformalt kontener; a rejtett player 0x0/opacity 0/pointer-events none root-mintara valtott, es `setVolume(25)` utan `playVideo()` / `pauseVideo()` fut.
+- Follow-up: eles iPad/iPhone smoke teszt a `/3d_r_cube/` aloldalon.
+
+## 2026-07-24 - Chrome iOS kockahang feloldas
+
+- Cel: javitani, hogy Chrome telefonon a kocka sajat effekt hangja is megszolalhasson, ne csak Safariban.
+- Modositott teruletek: `App.tsx`, STATE, verzio, inventory.
+- Eredmeny: a kockahang tartos `AudioContext` peldanyt kapott, amelyet az elso pointer vagy billentyu interakcio kozvetlenul felold. A forgatas utani kesleltetett tick mar ezt a feloldott contextet hasznalja.
+- Follow-up: fizikai Chrome iOS smoke teszt: kockaforgatas utan hallhato-e az effekt hang, es a hatterzene gomb megszolal-e.
+
+## 2026-07-24 - Chrome iOS audio ujraprobalas
+
+- Cel: kezelni, hogy Chrome iOS alatt a kockahang ne csak neha szolaljon meg, es a zeneinditas ne vesszen el, ha a YouTube player keson keszul el.
+- Modositott teruletek: `App.tsx`, `AmbientBackdrop.tsx`, STATE, verzio, inventory.
+- Eredmeny: az audio feloldas kozvetlen pointer/touch/mouse esemenyben nema oscillator prime-ot is indit; a kesleltetett tick felfuggesztett contextnel egyszer megprobal resume utan megszolalni. Bekapcsolt hatterzene mellett minden kesobbi user gesture ujra meghivja a YouTube `playVideo()`-t.
+- Follow-up: friss build feltoltese utan iPhone/iPad Chrome smoke teszt.
+
+## 2026-07-25 - Mobil audio inditasi allapot stabilizalas
+
+- Cel: kezelni a videon latott random mintat, ahol a gombnyomasok utan a zene neha csak tobb ki-be kapcsolas utan indult, es a kockahang frissites utan neha kesve jelent meg.
+- Modositott teruletek: `App.tsx`, `AmbientBackdrop.tsx`, STATE, verzio, inventory.
+- Eredmeny: a hatterzene vezerlese haromallapotu lett: `off`, `starting`, `playing`. A gomb csak tenyleges YouTube `PLAYING` state utan szamit lejatszonak; `starting` allapotban az ujabb koppintas retry, nem kikapcsolas. A kockahang unlock a konkret kockamozdulat inditasakor is fut, es a nema prime csak sikeres `AudioContext.resume()` utan indul.
+- Follow-up: friss build feltoltese utan mobil Safari/Chrome/Opera smoke teszt, kulon figyelve arra, hogy `starting` allapotbol hany koppintas utan lesz tenyleges hang.

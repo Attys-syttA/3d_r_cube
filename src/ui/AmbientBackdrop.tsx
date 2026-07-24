@@ -1,24 +1,25 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
 interface AmbientBackdropProps {
-  isMusicPlaying: boolean;
+  isMusicRequested: boolean;
+  onMusicPlaybackChange: (isPlaying: boolean) => void;
 }
 
 export interface AmbientBackdropHandle {
   pauseMusic: () => void;
   playMusic: () => boolean;
+  retryMusic: () => void;
 }
 
 const VIDEO_ID = "1c3hfdbLZ9c";
-export const YOUTUBE_EMBED_URL = `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?controls=1&playsinline=1&rel=0&modestbranding=1`;
 const YOUTUBE_API_SRC = "https://www.youtube.com/iframe_api";
 const PLAYER_ELEMENT_ID = "ambient-youtube-player";
 const PLAYER_VOLUME = 25;
+const YOUTUBE_STATE_ENDED = 0;
+const YOUTUBE_STATE_PLAYING = 1;
+const YOUTUBE_STATE_PAUSED = 2;
 
 interface YouTubePlayer {
-  mute: () => void;
-  unMute: () => void;
-  loadVideoById: (videoId: string) => void;
   pauseVideo: () => void;
   playVideo: () => void;
   setVolume: (volume: number) => void;
@@ -30,11 +31,12 @@ interface YouTubeApi {
     options: {
       events: {
         onReady: (event: { target: YouTubePlayer }) => void;
+        onStateChange: (event: { data: number }) => void;
       };
-      height: string;
+      height?: string;
       playerVars: Record<string, number | string>;
       videoId: string;
-      width: string;
+      width?: string;
     }
   ) => YouTubePlayer;
 }
@@ -65,7 +67,7 @@ function createParticles(width: number, height: number): Particle[] {
 }
 
 export const AmbientBackdrop = forwardRef<AmbientBackdropHandle, AmbientBackdropProps>(function AmbientBackdrop(
-  { isMusicPlaying },
+  { isMusicRequested, onMusicPlaybackChange },
   ref
 ) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -124,18 +126,13 @@ export const AmbientBackdrop = forwardRef<AmbientBackdropHandle, AmbientBackdrop
     const createPlayer = () => {
       if (playerRef.current || !window.YT) return;
       playerRef.current = new window.YT.Player(PLAYER_ELEMENT_ID, {
-        height: "200",
         videoId: VIDEO_ID,
-        width: "200",
         playerVars: {
           autoplay: 0,
           controls: 0,
-          enablejsapi: 1,
           loop: 1,
           modestbranding: 1,
-          origin: window.location.origin,
           playlist: VIDEO_ID,
-          playsinline: 1,
           rel: 0
         },
         events: {
@@ -143,6 +140,15 @@ export const AmbientBackdrop = forwardRef<AmbientBackdropHandle, AmbientBackdrop
             event.target.setVolume(PLAYER_VOLUME);
             if (shouldPlayRef.current) {
               event.target.playVideo();
+            }
+          },
+          onStateChange: (event) => {
+            if (event.data === YOUTUBE_STATE_PLAYING) {
+              onMusicPlaybackChange(true);
+              return;
+            }
+            if (event.data === YOUTUBE_STATE_PAUSED || event.data === YOUTUBE_STATE_ENDED) {
+              onMusicPlaybackChange(false);
             }
           }
         }
@@ -174,20 +180,24 @@ export const AmbientBackdrop = forwardRef<AmbientBackdropHandle, AmbientBackdrop
     },
     playMusic: () => {
       shouldPlayRef.current = true;
-      if (!playerRef.current) return false;
-      playerRef.current.unMute();
+      if (!playerRef.current) return true;
       playerRef.current.setVolume(PLAYER_VOLUME);
       playerRef.current.playVideo();
       return true;
+    },
+    retryMusic: () => {
+      if (!shouldPlayRef.current || !playerRef.current) return;
+      playerRef.current.setVolume(PLAYER_VOLUME);
+      playerRef.current.playVideo();
     }
   }));
 
   useEffect(() => {
-    shouldPlayRef.current = isMusicPlaying;
-    if (!isMusicPlaying) {
+    shouldPlayRef.current = isMusicRequested;
+    if (!isMusicRequested) {
       playerRef.current?.pauseVideo();
     }
-  }, [isMusicPlaying]);
+  }, [isMusicRequested]);
 
   return (
     <div className="ambient-backdrop" aria-hidden="true">

@@ -48,20 +48,20 @@
     {
       "path": "README.md",
       "role": "project-memory",
-      "bytes": 4058,
-      "sha256": "9f7815bc011fe6e8550e1d33263ef2395dda9a2bd9ccafbc43451de407b6bfda"
+      "bytes": 3996,
+      "sha256": "10a8f400bbb6ea21adf1c13c95bd4fb36e77bfce44c8ce21d11146b50f204815"
     },
     {
       "path": "STATE.md",
       "role": "project-memory",
-      "bytes": 3485,
-      "sha256": "378268919b37a3a6c010b9ce710c39059dd47c588aa054610fc71a970e8a206d"
+      "bytes": 5748,
+      "sha256": "2c51cc27a4dc8a0a20aa0e7070974fe32c364acced60f6a9e10deecc31f5ae7a"
     },
     {
       "path": "docs/CHANGELOG.dev.md",
       "role": "documentation",
-      "bytes": 15242,
-      "sha256": "fd6ff1cabc39608dafccc611ae068e225d70c5c363d1fc4e497f7403b40863fa"
+      "bytes": 19324,
+      "sha256": "89e839c5c0fa72322a6233a7fc9d779ff26995474b795d1f56e66e1e12cfcff5"
     },
     {
       "path": "docs/SABLON_AGENTS.md",
@@ -94,6 +94,36 @@
       "sha256": "d0947480a6422e9e8a6f7bed8c46ecebfe354f96862ac92410c40c998ffce7f0"
     },
     {
+      "path": "docs/codex-tasks/plans/pending/active/.gitkeep",
+      "role": "documentation",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "docs/codex-tasks/plans/pending/not-started/.gitkeep",
+      "role": "documentation",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "docs/codex-tasks/plans/pending/not-started/apple_youtube_solution_patch.md",
+      "role": "documentation",
+      "bytes": 21839,
+      "sha256": "b27aaa1a969a7d98d6c14ecf74cfa45adb4a3b42f464516c8857d73764a48c2b"
+    },
+    {
+      "path": "docs/codex-tasks/plans/pending/not-started/apple_youtube_solution_tipp.md",
+      "role": "documentation",
+      "bytes": 10789,
+      "sha256": "7e1473f8768fdd99541056bbf823c1b31777cd24bb26ac7bb4b3596e4226ecc7"
+    },
+    {
+      "path": "docs/codex-tasks/plans/pending/reference/.gitkeep",
+      "role": "documentation",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
       "path": "index.html",
       "role": "repo-root",
       "bytes": 361,
@@ -103,13 +133,13 @@
       "path": "package-lock.json",
       "role": "repo-root",
       "bytes": 60658,
-      "sha256": "62cf05cdadc69766e7b0a375e6bfc64e828b74928c669de130855db92385fbe5"
+      "sha256": "1e45db4d17b9ad209041eeb651b447eb2ea4bcb7b063ec51967ed5eb32eece4d"
     },
     {
       "path": "package.json",
       "role": "repo-root",
       "bytes": 910,
-      "sha256": "9de68008b309a17c860b940ef79248dede600afc08f9efc9969b5663c5dc0f52"
+      "sha256": "31978a79db89b89afca0f23003e45032b7e297b744719486a365bbdc589bdee8"
     },
     {
       "path": "public/.htaccess",
@@ -180,20 +210,20 @@
     {
       "path": "src/styles/main.css",
       "role": "source",
-      "bytes": 8280,
-      "sha256": "9b7c086e37c1d73d8d4344e0c7578e6e4be5a9561a14b50b8d5c9c8351c765f5"
+      "bytes": 8470,
+      "sha256": "81fb36c5ed8353a709625dc4804528b68dea42d7ed919ba098ae044355e4121e"
     },
     {
       "path": "src/ui/AmbientBackdrop.tsx",
       "role": "source",
-      "bytes": 5583,
-      "sha256": "a8963738594aeb50ed3cc216767541a61001131f1d2416d63dd9324dafebbe96"
+      "bytes": 5977,
+      "sha256": "564d7fa20bc70f9fe872cec6dbe0b48c71230907f5493ed52a654325b9ac19b1"
     },
     {
       "path": "src/ui/App.tsx",
       "role": "source",
-      "bytes": 18006,
-      "sha256": "4270ab0ba750a827e0380d0198358907cf55cbedabeae9b9b0902c385a50e053"
+      "bytes": 25171,
+      "sha256": "7b5d619ab28afe9fa5a15b8e4d982c1a4ea56a8ad80fd278b3c43ad74a562d0f"
     },
     {
       "path": "src/ui/CubeScene.tsx",
