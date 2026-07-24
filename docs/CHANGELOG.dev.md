@@ -183,3 +183,10 @@
 - Modositott teruletek: `CubeScene.tsx`, STATE, verzio, inventory.
 - Eredmeny: a lathato `STICKER_SIZE` `0.68`-rol `0.81`-re nott a `0.94` panelmeret mellett. Ez kb. 19% matrica-noveles, es a panelenkenti fekete perem oldalankent kb. `0.13`-rol `0.065`-re, vagyis felere csokken.
 - Follow-up: eles vizualis smoke teszt desktopon es telefonon.
+
+## 2026-07-24 - GitHub Actions Node 24 kompatibilitas
+
+- Cel: javitani a GitHub Actions futast a Node 20 action-runtime deprecation es a tiszta runner dependency-telepitese miatt.
+- Modositott teruletek: `.github/workflows/check.yml`, verzio, inventory.
+- Eredmeny: a workflow `actions/checkout@v7` es `actions/setup-node@v7` verziokra valt, npm cache-t hasznal, es a `npm.cmd run check` elott `npm.cmd ci` telepitest futtat.
+- Follow-up: push utan GitHub Actions `check` futas ellenorzese.

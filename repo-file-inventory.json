@@ -24,8 +24,8 @@
     {
       "path": ".github/workflows/check.yml",
       "role": "ci",
-      "bytes": 321,
-      "sha256": "0cb0b8b9f1508429cf12afdbd8bc1429ce24ebb7d4173a6517eccca1c695782d"
+      "bytes": 402,
+      "sha256": "f4b4297e0bab2eb3509a68ebe9d4aab6be0ed11c92f5273cad07ad02cbebf86a"
     },
     {
       "path": ".gitignore",
@@ -54,14 +54,14 @@
     {
       "path": "STATE.md",
       "role": "project-memory",
-      "bytes": 2936,
-      "sha256": "da4c7fa5cb476e506f891054f8ac0bf627ed9a77e06becc4e6fe22cf6db6626a"
+      "bytes": 3347,
+      "sha256": "68f0d2cd78baddc02b4698af605cd6d3b50dff52a9367d1b4f5a1571eae28c19"
     },
     {
       "path": "docs/CHANGELOG.dev.md",
       "role": "documentation",
-      "bytes": 14641,
-      "sha256": "6ae5b73bcc87dff2994f52430a6f7a232f8f5d820e64af7b9f58a0a77aaf4787"
+      "bytes": 15133,
+      "sha256": "8229050c60f55a1bf51b64abe31bdaa19ee777dcb0a1040b99d03d16fe9e5dc5"
     },
     {
       "path": "docs/SABLON_AGENTS.md",
@@ -103,13 +103,13 @@
       "path": "package-lock.json",
       "role": "repo-root",
       "bytes": 60658,
-      "sha256": "ff17c22aba1ef11b8bd4d07195af54232495a0ef77cb5f0bd55849616a6c9673"
+      "sha256": "054797e6f3953b21d087a85602339b3b9d95706c05817a63dc4954b0bb152c8c"
     },
     {
       "path": "package.json",
       "role": "repo-root",
       "bytes": 910,
-      "sha256": "b79122f7e54a78ca42bde9731eb04a6c4009466f0f673cbe6c25bb9890457e53"
+      "sha256": "cd8f7369615ed30a724729a63c5f7a5a6272c54c2c836ea65db4a1446030e315"
     },
     {
       "path": "public/.htaccess",
