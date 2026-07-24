@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/check-inventory.mjs",
+  "root": "3d_r_cube",
+  "files": [
+    {
+      "path": ".editorconfig",
+      "role": "repo-config",
+      "bytes": 199,
+      "sha256": "0ade8fa9f1f50a79745b6ab962e0e28aad2d6e7b7b95abc948f24e8564bdc23d"
+    },
+    {
+      "path": ".env.example",
+      "role": "repo-config",
+      "bytes": 88,
+      "sha256": "4c986ff395bd1f03e06143653121edaab1b77db4ccd9ef4215a35a0393650734"
+    },
+    {
+      "path": ".gitattributes",
+      "role": "repo-config",
+      "bytes": 79,
+      "sha256": "2e73b2fe40790afb9ef6354edf6c61d5a423532b3dbeeca414e621a749ed42d8"
+    },
+    {
+      "path": ".github/workflows/check.yml",
+      "role": "ci",
+      "bytes": 321,
+      "sha256": "0cb0b8b9f1508429cf12afdbd8bc1429ce24ebb7d4173a6517eccca1c695782d"
+    },
+    {
+      "path": ".gitignore",
+      "role": "repo-config",
+      "bytes": 176,
+      "sha256": "10d5b092d389b35bb7a6e823b1292c5a5a36d8c8649c475f9b98b079b6c103a7"
+    },
+    {
+      "path": "AGENTS.md",
+      "role": "project-memory",
+      "bytes": 5524,
+      "sha256": "6a1fd8e1bab4ec72fccc132950bbf066be9445557d3be2294ee7f447ff8ca2a0"
+    },
+    {
+      "path": "LICENSE",
+      "role": "repo-root",
+      "bytes": 1068,
+      "sha256": "7a7fd306d50d01381363932ed44c89f766ac02aa90387cb39ede3d0c51dc4b72"
+    },
+    {
+      "path": "README.md",
+      "role": "project-memory",
+      "bytes": 4058,
+      "sha256": "9f7815bc011fe6e8550e1d33263ef2395dda9a2bd9ccafbc43451de407b6bfda"
+    },
+    {
+      "path": "STATE.md",
+      "role": "project-memory",
+      "bytes": 2936,
+      "sha256": "da4c7fa5cb476e506f891054f8ac0bf627ed9a77e06becc4e6fe22cf6db6626a"
+    },
+    {
+      "path": "docs/CHANGELOG.dev.md",
+      "role": "documentation",
+      "bytes": 14641,
+      "sha256": "6ae5b73bcc87dff2994f52430a6f7a232f8f5d820e64af7b9f58a0a77aaf4787"
+    },
+    {
+      "path": "docs/SABLON_AGENTS.md",
+      "role": "documentation",
+      "bytes": 195,
+      "sha256": "77b6edf06f0cbf88fd042fcfe24bbb5ff846a054af23a1059957f01195428934"
+    },
+    {
+      "path": "docs/STATE_SABLON.md",
+      "role": "documentation",
+      "bytes": 196,
+      "sha256": "e3eeae4ac35114022a6d26118d578b622751fd51de99b548c85994ead9aca934"
+    },
+    {
+      "path": "docs/TERV_STATUS_SABLON.md",
+      "role": "documentation",
+      "bytes": 128,
+      "sha256": "f54a6ae723eaef42c3af94835ecbc3c04ea4e2a620b314a0e6552833c38435e3"
+    },
+    {
+      "path": "docs/codex-tasks/README.md",
+      "role": "documentation",
+      "bytes": 279,
+      "sha256": "745b6acd8451edd0bf07dd70795047228c2abdd3a86c7bdc1e63181dfb670250"
+    },
+    {
+      "path": "docs/codex-tasks/plans/done/3d_r_cube_first_plan.md",
+      "role": "documentation",
+      "bytes": 3832,
+      "sha256": "d0947480a6422e9e8a6f7bed8c46ecebfe354f96862ac92410c40c998ffce7f0"
+    },
+    {
+      "path": "index.html",
+      "role": "repo-root",
+      "bytes": 361,
+      "sha256": "da8b3848af570ab0ed1526ad7e455a7ab268d0e6ee9d367167ff5cd30a87be74"
+    },
+    {
+      "path": "package-lock.json",
+      "role": "repo-root",
+      "bytes": 60658,
+      "sha256": "ff17c22aba1ef11b8bd4d07195af54232495a0ef77cb5f0bd55849616a6c9673"
+    },
+    {
+      "path": "package.json",
+      "role": "repo-root",
+      "bytes": 910,
+      "sha256": "b79122f7e54a78ca42bde9731eb04a6c4009466f0f673cbe6c25bb9890457e53"
+    },
+    {
+      "path": "public/.htaccess",
+      "role": "public-asset",
+      "bytes": 806,
+      "sha256": "918160ddaacd0a587f06c946cf86508c0437c2b9d4b061bf8644e5b32e7e43fc"
+    },
+    {
+      "path": "public/assets/esperindex.png",
+      "role": "public-asset",
+      "bytes": 2403469,
+      "sha256": "dc31d4333911b83febeef1e35aa59492ed441acf57def0e4776fa2b9609dc53d"
+    },
+    {
+      "path": "public/favicon.svg",
+      "role": "public-asset",
+      "bytes": 682,
+      "sha256": "ae2760b7a7e817dd63ec55975a14edfc6a4b8b2738fc5214d9547e4f90be9b63"
+    },
+    {
+      "path": "scripts/check-encoding.mjs",
+      "role": "tooling",
+      "bytes": 1680,
+      "sha256": "a0d08f3e650fe4c0cd64c391ddc3539dfcc02b05b093c0e3ce35c6d3ef66a811"
+    },
+    {
+      "path": "scripts/check-inventory.mjs",
+      "role": "tooling",
+      "bytes": 2561,
+      "sha256": "c461e9d78c0678cd440af9572e57c6e1d7f534d28054637622d5ad4927360c3a"
+    },
+    {
+      "path": "scripts/check-workspace.mjs",
+      "role": "tooling",
+      "bytes": 863,
+      "sha256": "8883cff40b3ce616dcc50923fd200534870f7366fedf94c427771c082061eb48"
+    },
+    {
+      "path": "src/app/.gitkeep",
+      "role": "source",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "src/engine/.gitkeep",
+      "role": "source",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "src/engine/cube.ts",
+      "role": "source",
+      "bytes": 6914,
+      "sha256": "4fad513ca621d0b1fe920b0234306f63417f0139d38bd57186e7da0ec968f10f"
+    },
+    {
+      "path": "src/main.tsx",
+      "role": "source",
+      "bytes": 324,
+      "sha256": "c8ee1445cfed6fdda820bf9d2dd8a8aab48cca5d2f193becf3299e09298c99cf"
+    },
+    {
+      "path": "src/styles/.gitkeep",
+      "role": "source",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "src/styles/main.css",
+      "role": "source",
+      "bytes": 8280,
+      "sha256": "9b7c086e37c1d73d8d4344e0c7578e6e4be5a9561a14b50b8d5c9c8351c765f5"
+    },
+    {
+      "path": "src/ui/AmbientBackdrop.tsx",
+      "role": "source",
+      "bytes": 5583,
+      "sha256": "a8963738594aeb50ed3cc216767541a61001131f1d2416d63dd9324dafebbe96"
+    },
+    {
+      "path": "src/ui/App.tsx",
+      "role": "source",
+      "bytes": 18006,
+      "sha256": "4270ab0ba750a827e0380d0198358907cf55cbedabeae9b9b0902c385a50e053"
+    },
+    {
+      "path": "src/ui/CubeScene.tsx",
+      "role": "source",
+      "bytes": 17936,
+      "sha256": "27c1e63db18d61c3e53582598022b5d6fcc2826113baaf17947ab5b6c9895ed6"
+    },
+    {
+      "path": "src/vite-env.d.ts",
+      "role": "source",
+      "bytes": 104,
+      "sha256": "9a65459cfebd70876f5a00773be3182534cc6bf6a2ecfede5d7663ab838678f7"
+    },
+    {
+      "path": "test-results/.last-run.json",
+      "role": "repo-root",
+      "bytes": 45,
+      "sha256": "e22df5d0991eb28c09093b1e678b3fa8cd1fab48185d38e67cf79fb6e63ad5ea"
+    },
+    {
+      "path": "tests/.gitkeep",
+      "role": "test",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "tests/cube.test.ts",
+      "role": "test",
+      "bytes": 1776,
+      "sha256": "c24837d669f5691223c5cb615df60a49463495b7b333b1d3b6d952c8be2d6bdc"
+    },
+    {
+      "path": "tsconfig.app.json",
+      "role": "repo-root",
+      "bytes": 578,
+      "sha256": "18eef6f87ef638fb29585831d4c1898a1d06b725164f01d36be48120f6afa6d7"
+    },
+    {
+      "path": "tsconfig.json",
+      "role": "repo-root",
+      "bytes": 119,
+      "sha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808"
+    },
+    {
+      "path": "tsconfig.node.json",
+      "role": "repo-root",
+      "bytes": 369,
+      "sha256": "cf02db28e018ce395a701693d738b6d62d888679137bd2345f0dd83045090308"
+    },
+    {
+      "path": "vite.config.ts",
+      "role": "repo-root",
+      "bytes": 269,
+      "sha256": "38aac522b10cdc7978058a58ab81622abb2e6a677fa5c8fda794956b8593a046"
+    },
+    {
+      "path": "vitest.config.ts",
+      "role": "repo-root",
+      "bytes": 156,
+      "sha256": "d3a3ff77a4705ecef3d40fd7ffe42f86b3b9c3f7b9e54d3587c7486edb280265"
+    }
+  ]
+}

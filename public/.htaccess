@@ -1,0 +1,17 @@
+Options -Indexes
+DirectoryIndex index.html
+
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(php|php[0-9]|phtml|phar|cgi|pl|py|sh|bash|zsh|cmd|bat|ps1)$">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "no-referrer"
+  Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://www.youtube.com https://www.youtube-nocookie.com; frame-src https://www.youtube-nocookie.com https://www.youtube.com; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'"
+</IfModule>
