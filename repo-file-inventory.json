@@ -54,14 +54,14 @@
     {
       "path": "STATE.md",
       "role": "project-memory",
-      "bytes": 3347,
-      "sha256": "68f0d2cd78baddc02b4698af605cd6d3b50dff52a9367d1b4f5a1571eae28c19"
+      "bytes": 3485,
+      "sha256": "378268919b37a3a6c010b9ce710c39059dd47c588aa054610fc71a970e8a206d"
     },
     {
       "path": "docs/CHANGELOG.dev.md",
       "role": "documentation",
-      "bytes": 15133,
-      "sha256": "8229050c60f55a1bf51b64abe31bdaa19ee777dcb0a1040b99d03d16fe9e5dc5"
+      "bytes": 15242,
+      "sha256": "fd6ff1cabc39608dafccc611ae068e225d70c5c363d1fc4e497f7403b40863fa"
     },
     {
       "path": "docs/SABLON_AGENTS.md",
@@ -103,13 +103,13 @@
       "path": "package-lock.json",
       "role": "repo-root",
       "bytes": 60658,
-      "sha256": "054797e6f3953b21d087a85602339b3b9d95706c05817a63dc4954b0bb152c8c"
+      "sha256": "62cf05cdadc69766e7b0a375e6bfc64e828b74928c669de130855db92385fbe5"
     },
     {
       "path": "package.json",
       "role": "repo-root",
       "bytes": 910,
-      "sha256": "cd8f7369615ed30a724729a63c5f7a5a6272c54c2c836ea65db4a1446030e315"
+      "sha256": "9de68008b309a17c860b940ef79248dede600afc08f9efc9969b5663c5dc0f52"
     },
     {
       "path": "public/.htaccess",
@@ -138,8 +138,8 @@
     {
       "path": "scripts/check-inventory.mjs",
       "role": "tooling",
-      "bytes": 2561,
-      "sha256": "c461e9d78c0678cd440af9572e57c6e1d7f534d28054637622d5ad4927360c3a"
+      "bytes": 2577,
+      "sha256": "ceff02b666851bedf513a9122cc0988c966d5c6e59b7595e3d5db8c7e8f07c62"
     },
     {
       "path": "scripts/check-workspace.mjs",
@@ -206,12 +206,6 @@
       "role": "source",
       "bytes": 104,
       "sha256": "9a65459cfebd70876f5a00773be3182534cc6bf6a2ecfede5d7663ab838678f7"
-    },
-    {
-      "path": "test-results/.last-run.json",
-      "role": "repo-root",
-      "bytes": 45,
-      "sha256": "e22df5d0991eb28c09093b1e678b3fa8cd1fab48185d38e67cf79fb6e63ad5ea"
     },
     {
       "path": "tests/.gitkeep",

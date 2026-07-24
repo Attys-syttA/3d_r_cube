@@ -187,6 +187,6 @@
 ## 2026-07-24 - GitHub Actions Node 24 kompatibilitas
 
 - Cel: javitani a GitHub Actions futast a Node 20 action-runtime deprecation es a tiszta runner dependency-telepitese miatt.
-- Modositott teruletek: `.github/workflows/check.yml`, verzio, inventory.
-- Eredmeny: a workflow `actions/checkout@v7` es `actions/setup-node@v7` verziokra valt, npm cache-t hasznal, es a `npm.cmd run check` elott `npm.cmd ci` telepitest futtat.
+- Modositott teruletek: `.github/workflows/check.yml`, `scripts/check-inventory.mjs`, verzio, inventory.
+- Eredmeny: a workflow `actions/checkout@v7` es `actions/setup-node@v7` verziokra valt, npm cache-t hasznal, es a `npm.cmd run check` elott `npm.cmd ci` telepitest futtat. Az inventory script mar kizárja a lokalis/CI runtime `test-results/` mappat.
 - Follow-up: push utan GitHub Actions `check` futas ellenorzese.

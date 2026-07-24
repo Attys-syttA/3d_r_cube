@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 const root = process.cwd();
 const inventoryPath = join(root, "repo-file-inventory.json");
 const mode = process.argv.includes("--write") ? "write" : "check";
-const excludedDirs = new Set([".git", "node_modules", "dist", "build", "coverage", ".cache", ".serena"]);
+const excludedDirs = new Set([".git", "node_modules", "dist", "build", "coverage", ".cache", ".serena", "test-results"]);
 const excludedFiles = new Set(["repo-file-inventory.json"]);
 
 function classify(path) {
